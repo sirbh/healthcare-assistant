@@ -16,7 +16,13 @@ export default function Chat() {
     const [messages, setMessages] = useState<Message[]>([
         { role: 'ai', content: 'Hi there! How can I help you today?' },
         { role: 'user', content: 'What is the weather like in Paris?' },
-        { role: 'ai', content: 'Currently, it’s sunny and 24°C in Paris.' }
+        { role: 'ai', content: 'Currently, it’s sunny and 24°C in Paris.' },
+        { role: 'ai', content: 'Hi there! How can I help you today?' },
+        { role: 'user', content: 'What is the weather like in Paris?' },
+        { role: 'ai', content: 'Currently, it’s sunny and 24°C in Paris.' },
+        { role: 'ai', content: 'Hi there! How can I help you today?' },
+        { role: 'user', content: 'What is the weather like in Paris?' },
+        { role: 'ai', content: 'Currently, it’s sunny and 24°C in Paris.' },
     ]);
     const [input, setInput] = useState('');
 
@@ -33,7 +39,7 @@ export default function Chat() {
     return (
         <>
 
-            <div className="flex-1 w-full max-w-2xl mx-auto overflow-y-auto flex flex-col gap-4 px-2 pt-6 pb-20">
+            <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-6 pb-20 overflow-y-auto">
                 {messages.map((msg, idx) => (
                     <Card
                         key={idx}
@@ -50,17 +56,7 @@ export default function Chat() {
             </div>
 
             {/* Input area */}
-            <div className="w-full max-w-2xl mx-auto px-2 py-4 sticky bottom-0 bg-muted">
-                <div className="flex items-center gap-2">
-                    <Input
-                        placeholder="Send a message..."
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                    />
-                    <Button onClick={handleSend}>Send</Button>
-                </div>
-            </div>
+
         </>
 
     )
