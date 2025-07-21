@@ -1,19 +1,31 @@
-import { useState } from "react";
+'use client';
 import { Card, CardContent } from "../ui/card";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import MarkdownRenderer from "./markdown-render";
+import { useEffect, useRef } from "react";
 
 
 
 
-type Message = {
+
+export type Message = {
     role: 'user' | 'ai';
     content: string;
 };
 
-export default function Messages() {
+interface IMessagesProps {
+    messages: Message[];
+}
 
-    const [messages, setMessages] = useState<Message[]>([]);
+export default function Messages({ messages }: IMessagesProps) {
+
+    console.log('Messages:', messages);
+
+    const bottomRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
 
     // const [messages, setMessages] = useState<Message[]>([
     //     { role: 'ai', content: 'Hi there! How can I help you today?' },
@@ -40,15 +52,15 @@ export default function Messages() {
 
     return (
         <>
-            <div className="w-full overflow-y-auto">
-                <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-6 pb-20 ">
+            <div className="w-full h-full overflow-y-auto">
+                <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-8 pb-20 ">
 
-                    {/* {messages.length === 0 && (
-                        <div className="text-muted-foreground mt-10">
-                            <h1 className="text-4xl">Hi! I am your medical assistant </h1>
+                    {messages.length === 0 && (
+                        <div className="text-muted-foreground">
+                            <h1 className="text-3xl">Hi! I am your medical assistant </h1>
                             <p className="text-lg">How can I help you today!</p>
                         </div>
-                    )} */}
+                    )}
                     {messages.map((msg, idx) => (
                         <Card
                             key={idx}
@@ -58,10 +70,11 @@ export default function Messages() {
                                 }`}
                         >
                             <CardContent className="p-4 text-lg whitespace-pre-wrap">
-                                {msg.content}
+                                <MarkdownRenderer content={msg.content} />
                             </CardContent>
                         </Card>
                     ))}
+                    <div ref={bottomRef} />
                 </div>
             </div>
         </>

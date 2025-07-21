@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import SideMenu from "@/components/custom/side-menu";
+import Navigation from "@/components/custom/nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,9 +37,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-
-            {children}
+          <SidebarProvider defaultOpen={false}>
+            <SideMenu />
+            <main className="flex flex-1 h-screen bg-muted font-sans">
+              <div className="flex flex-col w-full h-full">
+                {/* Fixed top navigation */}
+                <Navigation />
+                {children}
+              </div>
+            </main>
           </SidebarProvider>
         </ThemeProvider>
       </body>

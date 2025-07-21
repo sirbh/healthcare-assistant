@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Textarea } from "../ui/textarea"
+import axios from "axios"
+import { useRouter } from "next/navigation"
 
 
 const formSchema = z.object({
@@ -36,6 +38,7 @@ const formSchema = z.object({
 
 export default function NewChatForm() {
 
+    const router = useRouter()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -47,10 +50,25 @@ export default function NewChatForm() {
     })
 
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values)
+
+        const resp = await axios.post('http://localhost:8000/new-chat', {}, {
+            withCredentials: true,
+        })
+
+        // const chats = await axios.get('http://localhost:8000/user-chats',{
+        //     withCredentials: true,
+        // });
+
+        console.log('Chats:', resp.data)
+
+        // console.log('Response from backend:', resp.data)
+        // console.log(`/${resp.data.chatId}`)
+        router.push(`/${resp.data.chatId}`)
+
     }
     return (
         <Form {...form}>

@@ -7,10 +7,12 @@ export default function ChatInput({
   input,
   setInput,
   handleSend,
+  showDefaultOptions
 }: {
   input: string;
   setInput: (value: string) => void;
   handleSend: () => void;
+  showDefaultOptions: boolean;
 }) {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -42,13 +44,13 @@ export default function ChatInput({
     <div className="w-full max-w-2xl mx-auto px-4 py-6 sticky bottom-0 bg-muted space-y-4">
       {/* Suggested Messages */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {suggestions.map((s, idx) => (
+        {showDefaultOptions && suggestions.map((s, idx) => (
           <Card
             key={idx}
-            className="cursor-pointer hover:bg-accent transition"
+            className="cursor-pointer hover:bg-accent transition p-4"
             onClick={() => setInput(s.prompt)}
           >
-            <CardContent className="p-4">
+            <CardContent className="">
               <p className="font-medium">{s.prompt}</p>
               <p className="text-sm text-muted-foreground">{s.description}</p>
             </CardContent>

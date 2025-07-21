@@ -1,3 +1,5 @@
+"use client";
+
 import { PlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useSidebar } from "../ui/sidebar";
@@ -5,10 +7,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { ModeSelector } from "./mode-selector";
 import { SideMenuToggle } from "./side-menu-toggle";
 import { ThemeSelector } from "./theme-selector";
+import { useRouter } from "next/navigation";
 
 export default function Navigation() {
 
     const { open } = useSidebar();
+    const router = useRouter();
     
 
     return (
@@ -24,6 +28,10 @@ export default function Navigation() {
                                 <Button
                                     variant="outline"
                                     className="px-2 md:h-fit ml-auto md:ml-0"
+                                    onClick={() => {
+                                        router.push("/");
+                                    }}
+                                    data-testid="new-chat-button"
                                 >
                                     <PlusIcon />
                                     <span className="md:sr-only">New Chat</span>
