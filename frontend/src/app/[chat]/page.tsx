@@ -1,12 +1,36 @@
 'use client';
 import ChatInput from '@/components/custom/chat-input';
 import ChatMessages, { Message } from '@/components/custom/messages';
+import axios from 'axios';
 import { useParams } from 'next/navigation'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 export default function Chat() {
     const params = useParams<{ chat: string }>();
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
+    const [loadingMessages, setLoadingMessages] = useState(true);
+
+
+    async function getChatHistory() {
+        setLoadingMessages(true);
+        try {
+            const res = await axios.get(`http://localhost:8000/chat/${params.chat}`, {
+                withCredentials: true,
+            });
+            // setMessages(res.data.messages);
+            console.log('Chat history:', res.data);
+            setMessages(res.data.messages)
+            setLoadingMessages(false);
+        } catch (error) {
+            console.error("Error fetching chat history:", error);
+            setLoadingMessages(false);
+        }
+    }
+
+    useEffect(() => {
+        console.log('Fetching chat history for:', params.chat);
+        getChatHistory();
+    }, []);
 
     const handleSend = async () => {
         if (!input.trim()) return;
@@ -59,7 +83,7 @@ export default function Chat() {
     };
     console.log('Chat ID:', params.chat);
     return <>
-        <ChatMessages messages={messages} />
-        <ChatInput handleSend={handleSend} input={input} setInput={setInput} showDefaultOptions={messages.length === 0} />
+        <ChatMessages messages={messages} messagesLoading={loadingMessages} messageLoading={false} />
+        <ChatInput handleSend={handleSend} input={input} setInput={setInput} showDefaultOptions={messages.length === 0} loading={loadingMessages} />
     </>
 }

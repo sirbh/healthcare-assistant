@@ -71,6 +71,7 @@ export default function SideMenu() {
                                 key={chat.chat_id}
                                 variant="ghost"
                                 className="w-full justify-start capitalize"
+                                onClick={() => router.push(`/${chat.chat_id}`)}
                             >
                                 {`${chat.info.name}`}
                             </Button>

@@ -14,9 +14,11 @@ export type Message = {
 
 interface IMessagesProps {
     messages: Message[];
+    messagesLoading: boolean;
+    messageLoading: boolean;
 }
 
-export default function Messages({ messages }: IMessagesProps) {
+export default function Messages({ messages, messagesLoading, messageLoading }: IMessagesProps) {
 
     console.log('Messages:', messages);
 
@@ -49,6 +51,15 @@ export default function Messages({ messages }: IMessagesProps) {
     // const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     //     if (e.key === 'Enter') handleSend();
     // };
+
+    if(messagesLoading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+            </div>
+        );
+    }
+
+    console.log(messageLoading);
 
     return (
         <>

@@ -7,12 +7,14 @@ export default function ChatInput({
   input,
   setInput,
   handleSend,
-  showDefaultOptions
+  showDefaultOptions,
+  loading
 }: {
   input: string;
   setInput: (value: string) => void;
   handleSend: () => void;
   showDefaultOptions: boolean;
+  loading: boolean;
 }) {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -44,7 +46,7 @@ export default function ChatInput({
     <div className="w-full max-w-2xl mx-auto px-4 py-6 sticky bottom-0 bg-muted space-y-4">
       {/* Suggested Messages */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {showDefaultOptions && suggestions.map((s, idx) => (
+        {!loading && showDefaultOptions && suggestions.map((s, idx) => (
           <Card
             key={idx}
             className="cursor-pointer hover:bg-accent transition p-4"
@@ -53,6 +55,25 @@ export default function ChatInput({
             <CardContent className="">
               <p className="font-medium">{s.prompt}</p>
               <p className="text-sm text-muted-foreground">{s.description}</p>
+            </CardContent>
+          </Card>
+        ))}
+        {loading && suggestions.map((s, idx) => (
+          <Card
+            key={idx}
+            className="transition p-4 flex animate-pulse space-x-4"
+          >
+            <CardContent className="">
+              <div className="flex-1 space-y-6 py-1">
+                <div className="h-2 rounded bg-gray-200"></div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="col-span-2 h-2 rounded bg-gray-200"></div>
+                    <div className="col-span-1 h-2 rounded bg-gray-200"></div>
+                  </div>
+                  <div className="h-2 rounded bg-gray-200"></div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -67,9 +88,10 @@ export default function ChatInput({
           placeholder="Send a message..."
           rows={1}
           className="min-h-[100px] max-h-[200px] resize-none text-base p-3 flex-1 pb-12"
+          disabled={loading}
         />
-        <Button className="absolute" variant="ghost" onClick={handleSend}>
-            <ArrowUp size={16} className="right-0" />
+        <Button className="absolute" variant="ghost" onClick={handleSend} disabled={loading}>
+          <ArrowUp size={16} className="right-0" />
         </Button>
       </div>
     </div>
