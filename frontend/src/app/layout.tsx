@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/custom/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SideMenu from "@/components/custom/side-menu";
-import Navigation from "@/components/custom/nav";
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,11 +41,10 @@ export default function RootLayout({
             <SideMenu />
             <main className="flex flex-1 h-screen bg-muted font-sans">
               <div className="flex flex-col w-full h-full">
-                {/* Fixed top navigation */}
-                <Navigation />
                 {children}
               </div>
             </main>
+            <Toaster position="top-center" />
           </SidebarProvider>
         </ThemeProvider>
       </body>

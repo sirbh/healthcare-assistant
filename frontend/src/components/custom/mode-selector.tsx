@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, startTransition, useEffect, useOptimistic, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,10 +10,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CheckCircleIcon, ChevronDownIcon, GlobeIcon, LockIcon } from 'lucide-react';
+import axios from 'axios';
+import { useParams } from 'next/navigation';
 
 
 
 export type VisibilityType = 'private' | 'public';
+
 
 const visibilities: Array<{
   id: VisibilityType;
@@ -37,11 +40,36 @@ const visibilities: Array<{
 
 export function ModeSelector({
   className,
+  chatVisibility,
 }: {
   className?: string;
+  chatVisibility: VisibilityType;
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
-  const [visibilityType, setVisibilityType] = useState<VisibilityType>('private');
+  const [visibility, setVisibility] = useState<VisibilityType>(chatVisibility);
+  const params = useParams<{ chat: string }>();
+  const [optimisticVisibility, addOptimisticVisibility] = useOptimistic<VisibilityType>(visibility);
+  
+  useEffect(() => {
+  setVisibility(chatVisibility);
+}, [chatVisibility]);
+  
+  console.log('ModeSelector visibility:', chatVisibility);
+  const handleVisibilityChange = (newVisibility: 'private' | 'public') => {
+    const isPublic = newVisibility === 'public';
+
+    axios.patch(`http://localhost:8000/chat/${params.chat}/visibility`, {
+      is_public: isPublic, // match FastAPI's expected body
+    }, {
+      withCredentials: true,
+    })
+      .then(() => {
+        return "update successfull"
+      })
+      .catch((error) => {
+        console.error('Error updating chat visibility:', error);
+      });
+  };
 
 
 
@@ -61,14 +89,14 @@ export function ModeSelector({
         >
 
           {
-            visibilityType === 'private' ? (
+            optimisticVisibility === 'private' ? (
               <LockIcon className="mr-2 h-4 w-4" />
             ) : (
               <GlobeIcon className="mr-2 h-4 w-4" />
             )
           }
           <span className="text-sm font-medium">
-            {visibilities.find((v) => v.id === visibilityType)?.label}
+            {visibilities.find((v) => v.id === optimisticVisibility)?.label}
           </span>
           <ChevronDownIcon />
         </Button>
@@ -80,11 +108,20 @@ export function ModeSelector({
             data-testid={`visibility-selector-item-${visibility.id}`}
             key={visibility.id}
             onSelect={() => {
-              setVisibilityType(visibility.id);
-              setOpen(false);
+              startTransition(async () => {
+                addOptimisticVisibility(visibility.id);
+                console.log('Selected visibility:', visibility.id);
+                try {
+                  await handleVisibilityChange(visibility.id);
+                  setVisibility(visibility.id)
+                } catch (error) {
+                  console.error('Error updating visibility:', error);
+                }
+
+              });
             }}
             className="gap-4 group/item flex flex-row justify-between items-center"
-            data-active={visibility.id === visibilityType}
+            data-active={visibility.id === optimisticVisibility}
           >
             <div className="flex flex-col gap-1 items-start">
               {visibility.label}

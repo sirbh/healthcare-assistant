@@ -1,14 +1,23 @@
 'use client';
 import ChatInput from '@/components/custom/chat-input';
 import ChatMessages, { Message } from '@/components/custom/messages';
+import { VisibilityType } from '@/components/custom/mode-selector';
+import Navigation from '@/components/custom/nav';
 import axios from 'axios';
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 export default function Chat() {
+
+
     const params = useParams<{ chat: string }>();
     const [input, setInput] = useState('');
+    const [chatVisibility, setChatVisibility] = useState<VisibilityType>('private');
     const [messages, setMessages] = useState<Message[]>([]);
     const [loadingMessages, setLoadingMessages] = useState(true);
+    const router = useRouter();
+
+
 
 
     async function getChatHistory() {
@@ -20,10 +29,13 @@ export default function Chat() {
             // setMessages(res.data.messages);
             console.log('Chat history:', res.data);
             setMessages(res.data.messages)
+            setChatVisibility(res.data.visibility);
             setLoadingMessages(false);
+            toast.success("Chat loaded successfully");
         } catch (error) {
             console.error("Error fetching chat history:", error);
-            setLoadingMessages(false);
+            toast.error("Failed to load chat");
+            router.push('/');
         }
     }
 
@@ -81,8 +93,8 @@ export default function Chat() {
             console.error('Streaming error:', err);
         }
     };
-    console.log('Chat ID:', params.chat);
     return <>
+        <Navigation visibility={chatVisibility} />
         <ChatMessages messages={messages} messagesLoading={loadingMessages} messageLoading={false} />
         <ChatInput handleSend={handleSend} input={input} setInput={setInput} showDefaultOptions={messages.length === 0} loading={loadingMessages} />
     </>

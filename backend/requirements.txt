@@ -21,3 +21,6 @@ langgraph-checkpoint-postgres
 sqlalchemy
 psycopg2-binary
 python-dotenv
+faiss-cpu
+numpy
+pandas

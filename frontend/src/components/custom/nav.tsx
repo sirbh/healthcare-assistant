@@ -4,17 +4,24 @@ import { PlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useSidebar } from "../ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { ModeSelector } from "./mode-selector";
+import { ModeSelector, VisibilityType } from "./mode-selector";
 import { SideMenuToggle } from "./side-menu-toggle";
 import { ThemeSelector } from "./theme-selector";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-export default function Navigation() {
+
+interface INavigationProps {
+    visibility?: VisibilityType;
+}
+export default function Navigation({ visibility }: INavigationProps) {
 
     const { open } = useSidebar();
     const router = useRouter();
-    
+    const pathname = usePathname(); 
 
+
+    
+    console.log('Navigation visibility:', visibility? visibility : 'private');
     return (
         <div className="top-0 z-50 w-full border-b bg-transparent ">
             {/* <SidebarTrigger /> */}
@@ -40,7 +47,7 @@ export default function Navigation() {
                             <TooltipContent>New Chat</TooltipContent>
                         </Tooltip>
                     )}
-                    <ModeSelector className="w-full md:w-auto" />
+                    {pathname!=="/" && <ModeSelector className="w-full md:w-auto" chatVisibility={visibility!}/>}
                 </div>
 
                 <ThemeSelector className="hidden md:flex" />

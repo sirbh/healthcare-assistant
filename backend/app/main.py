@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends,Body
+from fastapi import FastAPI, Request, Depends,Body, Path
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
@@ -161,13 +161,19 @@ async def chat_endpoint(
 
 @app.get("/chat/{chat_id}")
 def get_chat_by_id(chat_id: str, request: Request, db: Session = Depends(get_db)):
-    user_id = request.cookies.get("userId")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="User not authenticated")
-
     chat = db.query(Chat).filter(Chat.chat_id == chat_id).first()
-    if not chat or str(chat.user_id) != str(user_id):
-        raise HTTPException(status_code=403, detail="Chat not found or access denied")
+    
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+
+    # Check if chat is public
+    if not chat.is_public:
+        # If private, validate user authentication
+        user_id = request.cookies.get("userId")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="User not authenticated")
+        if str(chat.user_id) != str(user_id):
+            raise HTTPException(status_code=403, detail="Access denied")
     
 
     graph = app.state.graph
@@ -175,6 +181,14 @@ def get_chat_by_id(chat_id: str, request: Request, db: Session = Depends(get_db)
     thread = {"configurable": {"thread_id": chat.chat_id}}
 
     state = graph.get_state(thread)
+
+    if "messages" not in state.values:
+        # If messages key is missing, return empty chat
+        return {
+            "id": chat.chat_id,
+            "messages": [],
+            "visibility": "public" if chat.is_public else "private"
+        }
 
     messages = state.values['messages']
 
@@ -199,10 +213,33 @@ def get_chat_by_id(chat_id: str, request: Request, db: Session = Depends(get_db)
 
     return {
         "id": chat.chat_id,
-        "messages": typed_messages,  # Assuming metadata is stored as JSON
+        "messages": typed_messages,
+        "visibility": "public" if chat.is_public else "private"
     }
 
+@app.patch("/chat/{chat_id}/visibility")
+def update_chat_visibility(
+    chat_id: str = Path(...),
+    is_public: bool = Body(..., embed=True),
+    request: Request = None,
+    db: Session = Depends(get_db)
+):
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not authenticated")
 
+    chat = db.query(Chat).filter(Chat.chat_id == chat_id).first()
+
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    
+    if str(chat.user_id) != str(user_id):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    chat.is_public = is_public
+    db.commit()
+
+    return {"chat_id": chat_id, "is_public": chat.is_public}
 
 
 

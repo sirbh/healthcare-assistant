@@ -51,6 +51,7 @@ export default function Messages({ messages, messagesLoading, messageLoading }: 
     // const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     //     if (e.key === 'Enter') handleSend();
     // };
+    
 
     if(messagesLoading) {
         return (
@@ -64,7 +65,7 @@ export default function Messages({ messages, messagesLoading, messageLoading }: 
     return (
         <>
             <div className="w-full h-full overflow-y-auto">
-                <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-8 pb-20 ">
+                <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-8 pb-0 ">
 
                     {messages.length === 0 && (
                         <div className="text-muted-foreground">
