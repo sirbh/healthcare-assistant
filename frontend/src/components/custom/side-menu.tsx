@@ -14,34 +14,15 @@ import {
     TooltipTrigger,
     TooltipContent
 } from "../ui/tooltip";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { usePathname, useRouter } from "next/navigation"; // App Router
+import { useContext } from "react";
+import { ChatStateContext } from "@/context/chat-state";
+import { useRouter } from "next/navigation";
 
 export default function SideMenu() {
-    const [loading, setLoading] = useState(false);
-    const [chats, setChats] = useState<{ chat_id: string, info: { name: string } }[]>([]);
-    const pathname = usePathname();
     const router = useRouter();
+    const {chats, loading} = useContext(ChatStateContext); // Assuming ChatStateContext is defined and provides chats and loading state
 
-    const fetchChatHistory = async () => {
-        try {
-            setLoading(true);
-            const res = await axios.get('http://localhost:8000/user-chats', {
-                withCredentials: true,
-            });
-            setChats(res.data.chats);
-        } catch (error) {
-            console.error("Error fetching chat history:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Re-fetch on route change
-    useEffect(() => {
-        fetchChatHistory();
-    }, [pathname]); // Runs when route changes
+    console.log("Rendering SideMenu with chats:", chats);
 
     return (
         <Sidebar>

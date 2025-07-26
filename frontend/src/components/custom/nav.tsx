@@ -24,7 +24,6 @@ export default function Navigation({ visibility }: INavigationProps) {
     console.log('Navigation visibility:', visibility? visibility : 'private');
     return (
         <div className="top-0 z-50 w-full border-b bg-transparent ">
-            {/* <SidebarTrigger /> */}
             <div className="px-8 py-3 relative flex align-centre justify-between">
                 <div className="flex justify-start items-center gap-2">
 

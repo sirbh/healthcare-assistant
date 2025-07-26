@@ -9,15 +9,18 @@ from .deps import get_db
 from .crud import create_chat_record, get_chats_by_user_id
 from sqlalchemy.orm import Session
 from .db import Base, engine
+from datetime import datetime, timezone
+
 
 from .agent import create_graph
+from .agents.summarizer import create_graph as create_summarizer_graph
 
 from contextlib import asynccontextmanager
 from .agent_memory.db import init_memory
 
 from langchain.schema import HumanMessage, AIMessage
 
-import os
+import os,json
 
 
 
@@ -37,6 +40,7 @@ async def lifespan(app: FastAPI):
     app.state.store = store
     app.state.checkpointer = checkpointer
     app.state.graph = create_graph(store, checkpointer)
+    app.state.summarizer_graph = create_summarizer_graph()
 
     yield
 
@@ -55,15 +59,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/health")
+@app.get("/api/health")
 def health_check():
     return {"status": "ok", "message": "API is running smoothly."}
 
-@app.post("/new-chat")
+
+@app.post("/api/new-chat")
 def create_chat(
     request: Request,
     is_public: bool = False,
-    info: dict = Body(default={"name": "new chat"}),
     db: Session = Depends(get_db)
 ):
     user_id = request.cookies.get("userId")
@@ -74,9 +78,23 @@ def create_chat(
 
     chat_id = str(uuid4())
 
-    create_chat_record(db, user_id=user_id, chat_id=chat_id, is_public=is_public, info=info)
+    # 🟢 Update: pass chat_name instead of info
+    chat = create_chat_record(
+        db,
+        user_id=user_id,
+        chat_id=chat_id,
+        is_public=is_public,
+        chat_name="new chat"
+    )
 
-    response = JSONResponse(content={"chatId": chat_id})
+    response = JSONResponse(content={
+        "chatId": chat.chat_id,
+        "info": {
+            "name": chat.chat_name,
+            "created_at": chat.created_at.isoformat(),
+            "updated_at": chat.updated_at.isoformat(),
+        }
+    })
     if is_new_user:
         response.set_cookie(
             key="userId",
@@ -90,7 +108,8 @@ def create_chat(
 
 
 
-@app.get("/user-chats")
+
+@app.get("/api/user-chats")
 def get_user_chats(request: Request, db: Session = Depends(get_db)):
     user_id = request.cookies.get("userId")
     if not user_id:
@@ -102,13 +121,18 @@ def get_user_chats(request: Request, db: Session = Depends(get_db)):
         "chats": [
             {
                 "chat_id": chat.chat_id,
-                "info": chat.info
+                "info": {
+                    "name": chat.chat_name,
+                    "created_at": chat.created_at,
+                    "updated_at": chat.updated_at,
+                }
             }
             for chat in chats
         ]
     }
 
-@app.post("/chat")
+
+@app.post("/api/chat")
 async def chat_endpoint(
     request: Request,
     body: dict = Body(...),
@@ -121,6 +145,15 @@ async def chat_endpoint(
     chat_id = body.get("chat_id")
     message = body.get("message", "")
 
+    if not chat_id or not message:
+        return JSONResponse(status_code=400, content={"error": "Invalid request"})
+
+    chat = db.query(Chat).filter(Chat.chat_id == chat_id).first()
+    if not chat:
+        return JSONResponse(status_code=404, content={"error": "Chat not found"})
+    if chat.user_id != user_id:
+        return JSONResponse(status_code=403, content={"error": "Chat does not belong to user"})
+
     print(f"Received chat request: {chat_id}, {message}")
 
     config = {
@@ -130,36 +163,81 @@ async def chat_endpoint(
         }
     }
 
-    if not chat_id or not message:
-        return JSONResponse(status_code=400, content={"error": "Invalid request"})
-
-    
     graph = app.state.graph
-
     if not graph:
         return JSONResponse(status_code=500, content={"error": "Graph not initialized"})
-    
-    async def even_generator():
+
+    async def event_generator():
         async for event in graph.astream_events(
             {"messages": [{"role": "user", "content": message}]},
             config=config,
             version="v2"
         ):
-            if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node','') == "assistant":
+            if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node', '') == "assistant":
                 data = event["data"]
-                # Yield text to client
-                yield data["chunk"].content
-        
+                yield json.dumps({
+                    "type": "ai",
+                    "content": data["chunk"].content
+                }) + "\n"
 
-    
-    return StreamingResponse(even_generator(), media_type="text/plain")
+        # Retrieve updated state
+        state = await graph.aget_state(config)
+        messages = state.values.get('messages', [])
+
+        if len(messages) <= 40:
+            typed_messages = []
+            for msg in messages:
+                if isinstance(msg, HumanMessage):
+                    typed_messages.append({'role': 'user', 'content': msg.content})
+                elif isinstance(msg, AIMessage):
+                    if msg.response_metadata.get('finish_reason') == 'stop':
+                        typed_messages.append({'role': 'ai', 'content': msg.content})
+
+            summary_prompt = f"""
+               summarize the chat in max 2 words
+               only return the summary, do not return any other text
+               Here is the chat: {typed_messages}
+            """
+            summary_chunks = []
+
+            async for event in app.state.summarizer_graph.astream_events(
+                {"messages": [{"role": "user", "content": summary_prompt}]},
+                config={},
+                version="v2"
+            ):
+                if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node', '') == "assistant":
+                    data = event["data"]
+                    yield json.dumps({
+                        "type": "summary",
+                        "content": data["chunk"].content
+                    }) + "\n"
+                    summary_chunks.append(data["chunk"].content)
+
+            chat_name = "".join(summary_chunks).strip()
+            print(f"Chat name generated: {chat_name}")
+
+            if chat_name:
+                chat.chat_name = chat_name
+                try:
+                   updated_chat = db.query(Chat).filter(Chat.chat_id == chat_id).first()
+                   updated_chat.chat_name = chat_name
+                   db.commit()
+                except Exception as e:
+                   print(f"Error updating chat name: {e}")
+
+    chat.updated_at = datetime.now(timezone.utc)
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+            
 
 
 
 
 
 
-@app.get("/chat/{chat_id}")
+
+
+@app.get("/api/chat/{chat_id}")
 def get_chat_by_id(chat_id: str, request: Request, db: Session = Depends(get_db)):
     chat = db.query(Chat).filter(Chat.chat_id == chat_id).first()
     
@@ -217,7 +295,7 @@ def get_chat_by_id(chat_id: str, request: Request, db: Session = Depends(get_db)
         "visibility": "public" if chat.is_public else "private"
     }
 
-@app.patch("/chat/{chat_id}/visibility")
+@app.patch("/api/chat/{chat_id}/visibility")
 def update_chat_visibility(
     chat_id: str = Path(...),
     is_public: bool = Body(..., embed=True),

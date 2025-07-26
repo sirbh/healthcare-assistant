@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/custom/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SideMenu from "@/components/custom/side-menu";
 import { Toaster } from "@/components/ui/sonner"
+import ChatStateContextProvider from "@/context/chat-state";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,15 +38,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider defaultOpen={false}>
-            <SideMenu />
-            <main className="flex flex-1 h-screen bg-muted font-sans">
-              <div className="flex flex-col w-full h-full">
-                {children}
-              </div>
-            </main>
-            <Toaster position="top-center" />
-          </SidebarProvider>
+          <ChatStateContextProvider>
+            <SidebarProvider defaultOpen={false}>
+              <SideMenu />
+              <main className="flex flex-1 h-screen bg-muted font-sans">
+                <div className="flex flex-col w-full h-full">
+                  {children}
+                </div>
+              </main>
+              <Toaster position="top-center" />
+            </SidebarProvider>
+          </ChatStateContextProvider>
         </ThemeProvider>
       </body>
     </html>
