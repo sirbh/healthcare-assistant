@@ -65,7 +65,6 @@ def write_memory(state: MessagesState, config: RunnableConfig, store: BaseStore)
 
     """Reflect on the chat history and save a memory to the store."""
 
-    print("Writing memory...")
     
     # Get the user ID from the config
     user_id = config["configurable"]["user_id"]
@@ -320,7 +319,6 @@ def should_continue(state: ExtendedMessagesState):
     
     messages = state["messages"]
 
-    print(messages)
 
 
     # If there are more than 40 messages, then we summarize the conversation

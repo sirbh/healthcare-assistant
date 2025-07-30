@@ -44,7 +44,6 @@ Base.metadata.create_all(bind=engine)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     
-    print(os.environ.get("OPENAI_API_KEY"))
     store, checkpointer, store_ctx, checkpointer_ctx = await init_memory()
     await store.setup()
     await checkpointer.setup()
@@ -86,7 +85,6 @@ def create_chat(
     user_id = request.cookies.get("userId")
     is_new_user = user_id is None
 
-    print(form)
 
     if is_new_user:
         user_id = str(uuid4())
@@ -188,8 +186,6 @@ async def chat_endpoint(
         return JSONResponse(status_code=404, content={"error": "Chat not found"})
     if chat.user_id != user_id:
         return JSONResponse(status_code=403, content={"error": "Chat does not belong to user"})
-
-    print(f"Received chat request: {chat_id}, {message}")
 
     config = {
         "configurable": {
@@ -371,9 +367,7 @@ def get_user_profile(request: Request):
         raise HTTPException(status_code=401, detail="User not authenticated")
     
     namespace_for_memory = ("user_profile", user_id)
-    print(f"Retrieving user profile for namespace: {namespace_for_memory}")
     user_profile = app.state.store.get(namespace_for_memory, "user_details")
-    print(f"User profile retrieved: {user_profile}")
     if not user_profile:
         raise HTTPException(status_code=404, detail="User profile not found")
 
