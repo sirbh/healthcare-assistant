@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends,Body, Path
+from fastapi import FastAPI, Request, Depends,Body, Path, Form
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
@@ -10,6 +10,10 @@ from .crud import create_chat_record, get_chats_by_user_id
 from sqlalchemy.orm import Session
 from .db import Base, engine
 from datetime import datetime, timezone
+from langgraph.types import Command
+from pydantic import BaseModel, Field
+from typing import List
+from app.agent import UserProfile
 
 
 from .agent import create_graph
@@ -26,6 +30,13 @@ import os,json
 
 
 
+
+
+class ChatForm(BaseModel):
+    name: str
+    age: str
+    gender: str
+    conditions: str | None = None
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -64,19 +75,40 @@ def health_check():
     return {"status": "ok", "message": "API is running smoothly."}
 
 
+
 @app.post("/api/new-chat")
 def create_chat(
     request: Request,
+    form: ChatForm,
     is_public: bool = False,
     db: Session = Depends(get_db)
 ):
     user_id = request.cookies.get("userId")
     is_new_user = user_id is None
 
+    print(form)
+
     if is_new_user:
         user_id = str(uuid4())
+    
+    namespace = ("user_profile", user_id)
+    key = "user_details"
+    value = UserProfile(
+        user_name=form.name,
+        age=int(form.age),
+        gender=form.gender,
+        conditions=form.conditions.split(",") if form.conditions else []
+    )
+    app.state.store.put(namespace, key, value.model_dump())
+
+    for m in app.state.store.search(namespace):
+       print(m.dict())
+
 
     chat_id = str(uuid4())
+
+
+
 
     # 🟢 Update: pass chat_name instead of info
     chat = create_chat_record(
@@ -145,6 +177,9 @@ async def chat_endpoint(
     chat_id = body.get("chat_id")
     message = body.get("message", "")
 
+
+
+
     if not chat_id or not message:
         return JSONResponse(status_code=400, content={"error": "Invalid request"})
 
@@ -163,15 +198,17 @@ async def chat_endpoint(
         }
     }
 
+
     graph = app.state.graph
     if not graph:
         return JSONResponse(status_code=500, content={"error": "Graph not initialized"})
 
     async def event_generator():
         async for event in graph.astream_events(
-            {"messages": [{"role": "user", "content": message}]},
+            # Command(resume="go to step 3!"),
+            {"messages": [HumanMessage(content=message)],"summary":""},
             config=config,
-            version="v2"
+            version="v2",
         ):
             if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node', '') == "assistant":
                 data = event["data"]
@@ -179,12 +216,18 @@ async def chat_endpoint(
                     "type": "ai",
                     "content": data["chunk"].content
                 }) + "\n"
+            # chunk = event.get('data', {}).get('chunk', {})
 
-        # Retrieve updated state
+            # if '__interrupt__' in chunk:
+            #     print("I Was interrupted!")
+            #     print(f"Interrupt received: {chunk['__interrupt__'][0].value}")
+            #     yield json.dumps(chunk['__interrupt__'][0].value) + "\n"
+            #     break
+            
         state = await graph.aget_state(config)
         messages = state.values.get('messages', [])
 
-        if len(messages) <= 40:
+        if len(messages) <= 8:
             typed_messages = []
             for msg in messages:
                 if isinstance(msg, HumanMessage):
@@ -321,4 +364,17 @@ def update_chat_visibility(
 
 
 
- 
+@app.get("/api/user-profile")
+def get_user_profile(request: Request):
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+    
+    namespace_for_memory = ("user_profile", user_id)
+    print(f"Retrieving user profile for namespace: {namespace_for_memory}")
+    user_profile = app.state.store.get(namespace_for_memory, "user_details")
+    print(f"User profile retrieved: {user_profile}")
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+
+    return user_profile.value

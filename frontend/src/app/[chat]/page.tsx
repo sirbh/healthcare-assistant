@@ -18,6 +18,7 @@ export default function Chat() {
     const [loadingMessages, setLoadingMessages] = useState(true);
     const router = useRouter();
     const {updateChatName} = useContext(ChatStateContext);
+    const [messageLoading, setMessageLoading] = useState(false);
 
 
 
@@ -50,6 +51,7 @@ const handleSend = async () => {
     const userMessage = input;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setMessageLoading(true);
 
     try {
         const resp = await fetch('/api/chat', {
@@ -63,6 +65,8 @@ const handleSend = async () => {
                 'Content-Type': 'application/json',
             },
         });
+
+        
 
         if (!resp.body) throw new Error("No response body");
 
@@ -86,10 +90,15 @@ const handleSend = async () => {
 
                 try {
                     const data = JSON.parse(line);
+
+                    console.log('Received data:', data);
                     const { type, content } = data;
+
+
 
                     if (type === 'ai') {
                         aiBuffer += content;
+                        setMessageLoading(false);
                         setMessages(prev => {
                             const last = prev[prev.length - 1];
                             if (last?.role === 'ai') {
@@ -111,12 +120,13 @@ const handleSend = async () => {
         }
 
     } catch (err) {
+        setMessageLoading(false);
         console.error('Streaming error:', err);
     }
 };
     return <>
         <Navigation visibility={chatVisibility} />
-        <ChatMessages messages={messages} messagesLoading={loadingMessages} messageLoading={false} />
+        <ChatMessages messages={messages} messagesLoading={loadingMessages} messageLoading={messageLoading} />
         <ChatInput handleSend={handleSend} input={input} setInput={setInput} showDefaultOptions={messages.length === 0} loading={loadingMessages} />
     </>
 }

@@ -24,3 +24,5 @@ python-dotenv
 faiss-cpu
 numpy
 pandas
+python-multipart
+pillow

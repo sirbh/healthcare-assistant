@@ -16,11 +16,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "../ui/textarea"
 import axios from "axios"
 import { useRouter } from "next/navigation"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { ChatStateContext } from "@/context/chat-state"
 
 
+
 const formSchema = z.object({
+    name: z.string().min(1, "Name is required"),
     age: z
         .string()
         .min(1, "Age is required")
@@ -44,6 +46,7 @@ export default function NewChatForm() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            name: "",
             age: "",
             conditions: "",
             gender: "female"
@@ -51,11 +54,39 @@ export default function NewChatForm() {
         },
     })
 
+    const [loading, setLoading] = useState(false);
+
     const { addChat } = useContext(ChatStateContext);
+
+    const getProfileDetails = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get('/api/user-profile', {
+                withCredentials: true,
+            });
+            setLoading(false);
+            if (res.data) {
+                form.setValue('name', res.data.user_name || '');
+                form.setValue('age', res.data.age.toString() || '');
+                form.setValue('gender', res.data.gender || 'female');
+                const conditions = Array.isArray(res.data.conditions)
+                    ? res.data.conditions.join(', ')
+                    : res.data.conditions || '';
+                form.setValue('conditions', conditions);
+            }
+        } catch (error) {
+            setLoading(false);
+            console.error('Error fetching profile details:', error);
+        }
+    }
+
+    useEffect(() => {
+        getProfileDetails();
+    }, [])
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
 
-        const resp = await axios.post('/api/new-chat', {}, {
+        const resp = await axios.post('/api/new-chat', values, {
             withCredentials: true,
         })
 
@@ -65,31 +96,52 @@ export default function NewChatForm() {
             chat_id: resp.data.chatId,
             info: { name: resp.data.info.name }
         });
-        
+
         router.push(`/${resp.data.chatId}`)
 
     }
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-fit flex flex-col gap-4 w-sm p-4 bg-card shadow-sm rounded-lg">
-                <FormField
-                    control={form.control}
-                    name="age"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Age</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Enter Age" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                enter age in years
-                            </FormDescription>
+                <div className="flex gap-4">
+                    <div className="flex-1">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter Name" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Enter patient&apos;s name
+                                    </FormDescription>
+                                    <FormMessage className="min-h-4" />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <FormField
+                            control={form.control}
+                            name="age"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Age</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter Age" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Enter age in years
+                                    </FormDescription>
+                                    <FormMessage className="min-h-4" />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
 
-                            <FormMessage className="min-h-4" />
-                        </FormItem>
-                    )}
-                />
-
+                </div>
                 <FormField
                     control={form.control}
                     name="gender"
@@ -131,7 +183,7 @@ export default function NewChatForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full">Start New Chat</Button>
+                <Button type="submit" disabled={loading} className="w-full">Start New Chat</Button>
             </form>
         </Form>
     )

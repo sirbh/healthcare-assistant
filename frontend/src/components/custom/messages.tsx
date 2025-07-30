@@ -20,8 +20,6 @@ interface IMessagesProps {
 
 export default function Messages({ messages, messagesLoading, messageLoading }: IMessagesProps) {
 
-    console.log('Messages:', messages);
-
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -51,16 +49,15 @@ export default function Messages({ messages, messagesLoading, messageLoading }: 
     // const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     //     if (e.key === 'Enter') handleSend();
     // };
-    
 
-    if(messagesLoading) {
+
+    if (messagesLoading) {
         return (
             <div className="flex items-center justify-center h-full">
             </div>
         );
     }
 
-    console.log(messageLoading);
 
     return (
         <>
@@ -86,7 +83,16 @@ export default function Messages({ messages, messagesLoading, messageLoading }: 
                             </CardContent>
                         </Card>
                     ))}
-                    <div ref={bottomRef} />
+ 
+                    <div ref={bottomRef} className="p-6 h-4 w-full" >
+                       {messageLoading && (
+           
+                           <div className="self-start h-4 w-4 bg-gray-200 rounded-full animate-spin self-center">
+                              
+                           </div>
+  
+                       )}
+                    </div>
                 </div>
             </div>
         </>

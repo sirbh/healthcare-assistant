@@ -42,7 +42,7 @@ def get_vector_store():
         dim = len(embeddings.embed_query("test"))
         index = faiss.IndexFlatIP(dim)  # Use inner product for cosine similarity
 
-        # Patch: Wrap OpenAIEmbeddings to normalize outputs
+    
         class NormalizedOpenAIEmbeddings(OpenAIEmbeddings):
             def embed_documents(self, texts):
                 raw = super().embed_documents(texts)
