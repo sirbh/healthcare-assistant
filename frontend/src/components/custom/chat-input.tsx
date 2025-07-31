@@ -2,24 +2,35 @@ import { ArrowUp } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Textarea } from "../ui/textarea";
+import { useContext, useState } from "react";
+import { MessageStateContext } from "@/context/message-state";
 
-export default function ChatInput({
-  input,
-  setInput,
-  handleSend,
-  showDefaultOptions,
-  loading
-}: {
-  input: string;
-  setInput: (value: string) => void;
-  handleSend: () => void;
-  showDefaultOptions: boolean;
-  loading: boolean;
-}) {
+// export default function ChatInput({
+//   input,
+//   setInput,
+//   handleSend,
+//   showDefaultOptions,
+//   loading
+// }: {
+//   input: string;
+//   setInput: (value: string) => void;
+//   handleSend: () => void;
+//   showDefaultOptions: boolean;
+//   loading: boolean;
+// }) {
+
+export default function ChatInput() {
+
+  const {updateMessage,messagesLoading, messages, messageLoading} = useContext(MessageStateContext);
+  const [input, setInput] = useState<string>("");
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      if (input.trim()) {
+        updateMessage(input);
+        setInput("");
+      }
     }
   };
 
@@ -46,7 +57,7 @@ export default function ChatInput({
     <div className="w-full max-w-2xl mx-auto px-4 py-6 sticky bottom-0 bg-muted space-y-4">
       {/* Suggested Messages */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {!loading && showDefaultOptions && suggestions.map((s, idx) => (
+        {!messagesLoading && messages.length===0 && suggestions.map((s, idx) => (
           <Card
             key={idx}
             className="cursor-pointer hover:bg-accent transition p-4"
@@ -58,7 +69,7 @@ export default function ChatInput({
             </CardContent>
           </Card>
         ))}
-        {loading && suggestions.map((s, idx) => (
+        {messagesLoading && suggestions.map((s, idx) => (
           <Card
             key={idx}
             className="transition p-4 flex animate-pulse space-x-4"
@@ -88,9 +99,9 @@ export default function ChatInput({
           placeholder="Send a message..."
           rows={1}
           className="min-h-[100px] max-h-[200px] resize-none text-base p-3 flex-1 pb-12"
-          disabled={loading}
+          disabled={messageLoading||messagesLoading}
         />
-        <Button className="absolute" variant="ghost" onClick={handleSend} disabled={loading}>
+        <Button className="absolute" variant="ghost" onClick={()=>{}} disabled={messageLoading||messagesLoading}>
           <ArrowUp size={16} className="right-0" />
         </Button>
       </div>

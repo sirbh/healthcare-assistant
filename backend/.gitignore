@@ -1,2 +1,3 @@
 .env
 store/faiss*/
+mypc.pem
