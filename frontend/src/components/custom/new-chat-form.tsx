@@ -27,7 +27,7 @@ const formSchema = z.object({
         .string()
         .min(1, "Age is required")
         .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-            message: "Age must be a positive number",
+            message: "Age must be a positive num",
         }),
     gender: z.enum(["male", "female", "other"], {
         required_error: "Gender is required",
