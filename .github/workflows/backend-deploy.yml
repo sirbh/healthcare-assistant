@@ -22,5 +22,5 @@ jobs:
             cd /home/ec2-user/healthcare-assistant
             git pull origin main
             cd backend
-            docker-compose down --rmi all --volumes --remove-orphans
-            docker-compose up -d --build
+            docker-compose -f docker-compose.prod.yml down --rmi all --volumes --remove-orphans
+            docker-compose -f docker-compose.prod.yml up -d --build
