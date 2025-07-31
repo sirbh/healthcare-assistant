@@ -71,7 +71,7 @@ app.add_middleware(
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "message": "API is running smoothly."}
+    return {"status": "ok", "message": "API is running smoothly now."}
 
 
 
