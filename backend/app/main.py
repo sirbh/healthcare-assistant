@@ -3,21 +3,20 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, PlainTextResponse
 from uuid import uuid4
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import Request, Depends, HTTPException
 from .models import Chat
 from .deps import get_db
 from .crud import create_chat_record, get_chats_by_user_id
 from sqlalchemy.orm import Session
 from .db import Base, engine
-from datetime import datetime, timezone
-from langgraph.types import Command
 from pydantic import BaseModel, Field
-from typing import List
-from app.agent import UserProfile
+from app.agents.supervisor_agent import UserProfile
+import asyncio
 
 
-from .agent import create_graph
-from .agents.summarizer import create_graph as create_summarizer_graph
+from .graph.health_care_assistant_graph import create_graph
+from .graph.chat_naming_graph import create_graph as create_summarizer_graph
+from .graph.test_graph import create_graph as create_test_graph
 
 from contextlib import asynccontextmanager
 from .agent_memory.db import init_memory
@@ -50,6 +49,7 @@ async def lifespan(app: FastAPI):
     app.state.store = store
     app.state.checkpointer = checkpointer
     app.state.graph = create_graph(store, checkpointer)
+    # app.state.graph = create_test_graph(checkpointer)
     app.state.summarizer_graph = create_summarizer_graph()
 
     yield
@@ -202,23 +202,30 @@ async def chat_endpoint(
     async def event_generator():
         async for event in graph.astream_events(
             # Command(resume="go to step 3!"),
+            
             {"messages": [HumanMessage(content=message)],"summary":""},
             config=config,
             version="v2",
         ):
-            if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node', '') == "assistant":
+            if event["metadata"].get('langgraph_node', '') == "tools" and event["event"]=="on_tool_start": 
+                print(event["name"])
+                yield json.dumps({
+                    "type": "tool",
+                    "content": event["name"],
+                }) + "\n"
+                await asyncio.sleep(0.01)
+               
+            
+            elif event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node', '') == "supervisor":
                 data = event["data"]
+                print(data["chunk"].content)
                 yield json.dumps({
                     "type": "ai",
                     "content": data["chunk"].content
                 }) + "\n"
-            # chunk = event.get('data', {}).get('chunk', {})
+                
+                await asyncio.sleep(0.01)
 
-            # if '__interrupt__' in chunk:
-            #     print("I Was interrupted!")
-            #     print(f"Interrupt received: {chunk['__interrupt__'][0].value}")
-            #     yield json.dumps(chunk['__interrupt__'][0].value) + "\n"
-            #     break
             
         state = await graph.aget_state(config)
         messages = state.values.get('messages', [])
@@ -244,12 +251,14 @@ async def chat_endpoint(
                 config={},
                 version="v2"
             ):
+                
                 if event["event"] == "on_chat_model_stream" and event['metadata'].get('langgraph_node', '') == "assistant":
                     data = event["data"]
                     yield json.dumps({
                         "type": "summary",
                         "content": data["chunk"].content
                     }) + "\n"
+                    await asyncio.sleep(0.01)
                     summary_chunks.append(data["chunk"].content)
 
             chat_name = "".join(summary_chunks).strip()
@@ -264,8 +273,7 @@ async def chat_endpoint(
                 except Exception as e:
                    print(f"Error updating chat name: {e}")
 
-    chat.updated_at = datetime.now(timezone.utc)
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(event_generator(), media_type="application/json")
 
             
 
