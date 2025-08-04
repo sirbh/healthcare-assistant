@@ -34,24 +34,24 @@ export default function ChatInput() {
     }
   };
 
-  const suggestions = [
-    {
-      prompt: "Summarize this conversation",
-      description: "Get a concise summary of the chat so far.",
-    },
-    {
-      prompt: "What are the next steps?",
-      description: "Ask the assistant to provide action items.",
-    },
-    {
-      prompt: "Explain this more simply",
-      description: "Ask for a beginner-friendly explanation.",
-    },
-    {
-      prompt: "List pros and cons",
-      description: "Get a balanced comparison of any topic discussed.",
-    },
-  ];
+const suggestions = [
+  {
+    prompt: "Why am I feeling dizzy?",
+    description: "Get possible causes and advice for dizziness.",
+  },
+  {
+    prompt: "What does a headache mean?",
+    description: "Understand common reasons for headaches and when to be concerned.",
+  },
+  {
+    prompt: "Should I worry about chest pain?",
+    description: "Find out if your chest pain could be serious and what to do next.",
+  },
+  {
+    prompt: "What could be causing weird stomach pain?",
+    description: "Explore possible reasons for unusual stomach discomfort.",
+  },
+];
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4 py-6 sticky bottom-0 bg-muted space-y-4">

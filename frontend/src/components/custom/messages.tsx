@@ -55,7 +55,7 @@ export default function Messages() {
                     {messages.length === 0 && (
                         <div className="text-muted-foreground">
                             <h1 className="text-3xl">Hi! I am your medical assistant </h1>
-                            <p className="text-lg">How can I help you today!</p>
+                            <p className="text-lg">You can share your symptoms with me!</p>
                         </div>
                     )}
                     {messages.map((msg, idx) => (
