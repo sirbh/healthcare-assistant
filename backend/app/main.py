@@ -138,13 +138,13 @@ def create_chat(
 
     # Set cookie if it's a new user
     if is_new_user:
-        response.set_cookie(
-            key="userId",
-            value=user_id,
-            httponly=True,
-            samesite="lax",
-            secure=False
-        )
+      response.set_cookie(
+         key="userId",
+         value=user_id,
+         httponly=True,
+         samesite="none",  # ✅ REQUIRED for cross-origin
+         secure=True       # ✅ REQUIRED when samesite="none"
+    )
 
     return response
 
