@@ -58,7 +58,7 @@ export function ModeSelector({
   const handleVisibilityChange = (newVisibility: 'private' | 'public') => {
     const isPublic = newVisibility === 'public';
 
-    axios.patch(`/api/chat/${params.chat}/visibility`, {
+    axios.patch(`https://saurabhchauhan.shop/api/chat/${params.chat}/visibility`, {
       is_public: isPublic, // match FastAPI's expected body
     }, {
       withCredentials: true,

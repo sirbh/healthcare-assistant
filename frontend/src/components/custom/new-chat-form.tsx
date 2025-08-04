@@ -61,7 +61,7 @@ export default function NewChatForm() {
     const getProfileDetails = async () => {
         try {
             setLoading(true);
-            const res = await axios.get('/api/user-profile', {
+            const res = await axios.get('https://saurabhchauhan.shop/api/user-profile', {
                 withCredentials: true,
             });
             setLoading(false);
@@ -86,7 +86,7 @@ export default function NewChatForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
 
-        const resp = await axios.post('/api/new-chat', values, {
+        const resp = await axios.post('https://saurabhchauhan.shop/api/new-chat', values, {
             withCredentials: true,
         })
 
