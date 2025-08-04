@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 
 export type Message = {
-    role: 'user' | 'ai';
+    role: 'user' | 'ai' | 'tool';
     content: string;
 };
 

@@ -149,7 +149,7 @@ export default function NewChatForm() {
                         <FormItem>
                             <FormLabel>Gender</FormLabel>
                             <FormControl>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select gender" />
                                     </SelectTrigger>

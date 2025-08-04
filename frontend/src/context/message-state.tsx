@@ -115,20 +115,41 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
 
                         if (type === 'ai') {
+                            if(content.trim() === '') {
+                                console.warn('Skipping empty AI message');
+                                continue;
+                            } // skip empty AI messages
                             aiBuffer += content;
                             setMessageLoading(false);
                             setMessages(prev => {
                                 const last = prev[prev.length - 1];
-                                if (last?.role === 'ai') {
-                                    return [...prev.slice(0, -1), { role: 'ai', content: aiBuffer }];
-                                } else {
+                                // if (last?.role === 'ai') {
+                                //     return [...prev.slice(0, -1), { role: 'ai', content: aiBuffer }];
+                                // } else {
+                                //     return [...prev, { role: 'ai', content: aiBuffer }];
+                                // }
+
+                                if( last?.role === 'user') {
                                     return [...prev, { role: 'ai', content: aiBuffer }];
+                                }else {
+                                    return [...prev.slice(0, -1), { role: 'ai', content: aiBuffer }];
                                 }
                             });
                         } else if (type === 'summary') {
                             summaryBuffer += content;
                             console.log('Summary received:', summaryBuffer);
                             updateChatName?.(chatId!, summaryBuffer);
+                        } else if (type === 'tool') {
+
+                            console.log('Tool content received:', content);
+                            setMessages(prev => {
+                                const last = prev[prev.length - 1];
+                                if (last?.role === 'tool') {
+                                    return [...prev.slice(0, -1), { role: 'tool', content }];
+                                } else {
+                                    return [...prev, { role: 'tool', content }];
+                                }
+                            });
                         }
                     } catch (e) {
                         console.error('Error parsing JSON:', e);
