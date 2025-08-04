@@ -7,7 +7,7 @@ import NewChatForm from "@/components/custom/new-chat-form";
 
 export default function Home() {
 
-  console.log(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user-chats`);
+  console.log(`${process.env.NEXT_PUBLIC_BASE_URL}`);
   return (
     <>
       <Navigation />
