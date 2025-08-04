@@ -183,7 +183,7 @@ export default function NewChatForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={loading} className="w-full">Start New Chat</Button>
+                <Button type="submit" disabled={loading||form.formState.isSubmitting||form.formState.isLoading} className="w-full">Start New Chat</Button>
             </form>
         </Form>
     )
