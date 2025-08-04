@@ -49,15 +49,16 @@ export function ModeSelector({
   const [visibility, setVisibility] = useState<VisibilityType>(chatVisibility);
   const params = useParams<{ chat: string }>();
   const [optimisticVisibility, addOptimisticVisibility] = useOptimistic<VisibilityType>(visibility);
+
+  console.log('ModeSelector visibility:', optimisticVisibility);
   
   useEffect(() => {
   setVisibility(chatVisibility);
 }, [chatVisibility]);
   
-  console.log('ModeSelector visibility:', chatVisibility);
   const handleVisibilityChange = (newVisibility: 'private' | 'public') => {
     const isPublic = newVisibility === 'public';
-
+  
     axios.patch(`/api/chat/${params.chat}/visibility`, {
       is_public: isPublic, // match FastAPI's expected body
     }, {
@@ -113,7 +114,9 @@ export function ModeSelector({
                 console.log('Selected visibility:', visibility.id);
                 try {
                   await handleVisibilityChange(visibility.id);
-                  setVisibility(visibility.id)
+                  startTransition(() => {
+                    setVisibility(visibility.id);
+                  });
                 } catch (error) {
                   console.error('Error updating visibility:', error);
                 }

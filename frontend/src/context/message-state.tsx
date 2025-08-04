@@ -120,7 +120,6 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
                         if (type === 'ai') {
                             if (content.trim() === '') {
-                                console.warn('Skipping empty AI message');
                                 continue;
                             } // skip empty AI messages
                             aiBuffer += content;
@@ -141,11 +140,9 @@ export default function MessageStateContextProvider({ children }: { children: Re
                             });
                         } else if (type === 'summary') {
                             summaryBuffer += content;
-                            console.log('Summary received:', summaryBuffer);
                             updateChatName?.(chatId!, summaryBuffer);
                         } else if (type === 'tool') {
 
-                            console.log('Tool content received:', content);
                             setMessages(prev => {
                                 const last = prev[prev.length - 1];
                                 if (last?.role === 'tool') {
@@ -157,7 +154,6 @@ export default function MessageStateContextProvider({ children }: { children: Re
                         }
                     } catch (e) {
                         console.error('Error parsing JSON:', e);
-                        console.warn('Invalid JSON line:', line);
                         setIsMessageLoadingError(true);
                         setMessageLoading(false);
                     }

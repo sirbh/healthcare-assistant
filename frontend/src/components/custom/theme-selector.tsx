@@ -51,9 +51,6 @@ export function ThemeSelector({
   const {setTheme, theme} = useTheme();
   const [visibilityType, setVisibilityType] = useState<Theme>(theme as Theme || 'system');
 
-
-  console.log('Current theme:', theme);
-
   const handleVisibilityChange = (type: Theme) => {
     setVisibilityType(type);
     setTheme(type);

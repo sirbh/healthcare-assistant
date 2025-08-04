@@ -22,7 +22,6 @@ export default function SideMenu() {
     const router = useRouter();
     const {chats, loading} = useContext(ChatStateContext); // Assuming ChatStateContext is defined and provides chats and loading state
 
-    console.log("Rendering SideMenu with chats:", chats);
 
     return (
         <Sidebar>
