@@ -12,6 +12,8 @@ from app.model.chatmodel import llm
 from .retriever import retrieve
 from app.agents.evaluater_agent import check_documents
 from app.agents.diagnostic_agent import diagnose_condition
+from app.agents.recommender_agent import recommend_treatment
+from app.agents.explaination_agent import explain_diagnosis
 
 
 
@@ -38,7 +40,9 @@ class UserProfile(BaseModel):
 llm_with_tool = llm.bind_tools([
     retrieve,
     check_documents,
-    diagnose_condition
+    diagnose_condition,
+    recommend_treatment,
+    explain_diagnosis
 ])
 
 
@@ -58,6 +62,7 @@ def supervisor(state: ExtendedMessagesState,config: RunnableConfig, store: BaseS
                 Ask one question at a time and wait for the user's response. \
                 Once you have enough information, provide a possible diagnosis using the diagnose_condition tool. \
                 You can also ask you if they want explanation of the diagnosis and you can use explain_diagnosis tool. \
+                You can alos ask if they want treatment recommendations and you can use recommend_treatment tool. \
                 Here is the user profile information(it may be empty): {formatted_memory}
                 Summary of the conversation so far(it may be empty): {summary}"""
 

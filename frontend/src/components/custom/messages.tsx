@@ -34,7 +34,7 @@ export default function Messages() {
         );
     }
 
-    if (isMessagesLoadingError||isMessageLoadingError) {
+    if (isMessagesLoadingError) {
         
         toast.error('Request failed, please try again later');
         router.push('/');
@@ -44,6 +44,10 @@ export default function Messages() {
                 
             </div>
         );
+    }
+
+    if (isMessageLoadingError) {
+        toast.error('Request Cannot be processed');
     }
 
 

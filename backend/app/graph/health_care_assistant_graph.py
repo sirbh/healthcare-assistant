@@ -10,9 +10,10 @@ from app.agents.evaluater_agent import check_documents
 from app.agents.diagnostic_agent import diagnose_condition
 from app.agents.summary_agent import summarize_conversation
 from app.agents.memory_agent import write_memory
+from app.agents.explaination_agent import explain_diagnosis
+from app.agents.recommender_agent import recommend_treatment
 
-tools = ToolNode([retrieve, check_documents, diagnose_condition])
-
+tools = ToolNode([retrieve, check_documents, diagnose_condition, explain_diagnosis, recommend_treatment])
 
 def should_continue(state: ExtendedMessagesState):
     
@@ -63,10 +64,10 @@ def create_graph(store, checkpointer):
 
 
     anotherb =  builder.compile(store=store, checkpointer=checkpointer)
-    # png_bytes = anotherb.get_graph().draw_mermaid_png()
-    # image = Image.open(io.BytesIO(png_bytes))
+    png_bytes = anotherb.get_graph().draw_mermaid_png()
+    image = Image.open(io.BytesIO(png_bytes))
 
 # Show image using default image viewer
-    # image.show()
+    image.show()
 
     return anotherb

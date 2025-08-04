@@ -71,13 +71,18 @@ export default function MessageStateContextProvider({ children }: { children: Re
         setMessageLoading(true);
 
         try {
-            const resp = await fetch('/api/chat', {
+            const response = await axios.get('/api/user-id', {
+                withCredentials: true,  // Important: send cookies
+            });
+            const user_id =response.data.user_id;
+
+            const resp = await fetch(process.env.NEXT_PUBLIC_BASE_URL + '/api/chat', {
                 method: 'POST',
                 body: JSON.stringify({
                     chat_id: chatId,
+                    user_id: user_id,
                     message: msg,
                 }),
-                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -114,7 +119,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
 
                         if (type === 'ai') {
-                            if(content.trim() === '') {
+                            if (content.trim() === '') {
                                 console.warn('Skipping empty AI message');
                                 continue;
                             } // skip empty AI messages
@@ -128,9 +133,9 @@ export default function MessageStateContextProvider({ children }: { children: Re
                                 //     return [...prev, { role: 'ai', content: aiBuffer }];
                                 // }
 
-                                if( last?.role === 'user') {
+                                if (last?.role === 'user') {
                                     return [...prev, { role: 'ai', content: aiBuffer }];
-                                }else {
+                                } else {
                                     return [...prev.slice(0, -1), { role: 'ai', content: aiBuffer }];
                                 }
                             });
@@ -161,6 +166,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
         } catch (err) {
             setMessageLoading(false);
+            setIsMessageLoadingError(true);
             console.error('Streaming error:', err);
         }
     };
@@ -169,7 +175,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
 
     return (
-        <MessageStateContext value={{setChatId, isMessageLoadingError, isMessagesLoadingError, messages, updateMessage, visibility, messageLoading, messagesLoading }}>
+        <MessageStateContext value={{ setChatId, isMessageLoadingError, isMessagesLoadingError, messages, updateMessage, visibility, messageLoading, messagesLoading }}>
             {children}
         </MessageStateContext>
     );

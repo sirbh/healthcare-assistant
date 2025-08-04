@@ -196,9 +196,12 @@ async def chat_endpoint(
     body: dict = Body(...),
     db: Session = Depends(get_db)
 ):
-    user_id = request.cookies.get("userId")
+    user_id = body.get("user_id")  # <-- get user_id from body now
     if not user_id:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    # user_id = request.cookies.get("userId")
+    # if not user_id:
+    #     return JSONResponse(status_code=401, content={"error": "Unauthorized"})
 
     chat_id = body.get("chat_id")
     message = body.get("message", "")
@@ -421,3 +424,10 @@ def get_user_profile(request: Request):
         media_type="application/json",
         headers={"Content-Encoding": "gzip"}
     )
+
+@app.get("/api/user-id")
+def get_user_id(request: Request):
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="User not authenticated")
+    return {"user_id": user_id}
