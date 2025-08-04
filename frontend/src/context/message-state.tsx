@@ -42,7 +42,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
     const { updateChatName } = useContext(ChatStateContext);
     const [chatId, setChatId] = useState<string | null>(null);
 
-
+    const WS_URL = 'wss://pm8mwpyitl.execute-api.eu-north-1.amazonaws.com/production/';
     async function getChatHistory() {
         if (!chatId) return;
         setMessagesLoading(true);
@@ -72,7 +72,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
         setMessageLoading(true);
 
         try {
-            const resp = await fetch('/api/chat', {
+            const resp = await fetch('https://saurabhchauhan.shop/api/chat', {
                 method: 'POST',
                 body: JSON.stringify({
                     chat_id: chatId,
