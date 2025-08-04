@@ -63,7 +63,7 @@ app = FastAPI(lifespan=lifespan)
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://healthcare-assistant-woad.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
