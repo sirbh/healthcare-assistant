@@ -273,9 +273,7 @@ async def chat_endpoint(
                 except Exception as e:
                    print(f"Error updating chat name: {e}")
 
-    return StreamingResponse(event_generator(), media_type="application/json")
-
-            
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 
