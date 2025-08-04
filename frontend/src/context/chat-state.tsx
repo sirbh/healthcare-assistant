@@ -39,7 +39,7 @@ export default function ChatStateContextProvider({ children }: { children: React
     const fetchChatHistory = async () => {
         try {
             setLoading(true);
-            const res = await axios.get('https://saurabhchauhan.shop/api/user-chats', {
+            const res = await axios.get('/api/user-chats', {
                 withCredentials: true,
             });
             setChats(res.data.chats);

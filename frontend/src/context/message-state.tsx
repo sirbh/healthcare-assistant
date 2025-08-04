@@ -46,7 +46,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
         if (!chatId) return;
         setMessagesLoading(true);
         try {
-            const res = await axios.get(`https://saurabhchauhan.shop/api/chat/${chatId}`, {
+            const res = await axios.get(`/api/chat/${chatId}`, {
                 withCredentials: true,
             });
             setIsMessagesLoadingError(false);
@@ -71,7 +71,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
         setMessageLoading(true);
 
         try {
-            const resp = await fetch('https://saurabhchauhan.shop/api/chat', {
+            const resp = await fetch('/api/chat', {
                 method: 'POST',
                 body: JSON.stringify({
                     chat_id: chatId,
