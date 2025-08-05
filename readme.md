@@ -2,7 +2,7 @@
 
 This assistant is a multi-agent app that takes user input and provides diagnosis and lifestyle advice.
 
-App Url : [https://healthcare-assistant-woad.vercel.app](https://healthcare-assistant-woad.vercel.app)
+App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthcare-assistant-woad.vercel.app)
 
 ## System Diagrame
 
