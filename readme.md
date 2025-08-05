@@ -53,7 +53,6 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
 
 ## Symptom-Based FAISS Retriever
 
-## Symptom-Based FAISS Retriever
 
 This retriever loads symptom data from a CSV file and creates a FAISS vector store using OpenAI embeddings with cosine similarity. Each symptom is embedded and stored along with metadata like associated conditions and follow-up questions.
 
