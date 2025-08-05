@@ -1,4 +1,4 @@
-# Health Care Assistant
+# Health Care Assistant (Some parts of this document are fixed using AI)
 
 This assistant is a multi-agent app that takes user input and provides diagnosis and lifestyle advice.
 
