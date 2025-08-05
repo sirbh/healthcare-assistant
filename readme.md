@@ -53,6 +53,8 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
 
 ## Symptom-Based FAISS Retriever
 
+## Symptom-Based FAISS Retriever
+
 This retriever loads symptom data from a CSV file and creates a FAISS vector store using OpenAI embeddings with cosine similarity. Each symptom is embedded and stored along with metadata like associated conditions and follow-up questions.
 
 - **Embedding Field:** Only the `symptom` field is embedded.
@@ -61,7 +63,9 @@ This retriever loads symptom data from a CSV file and creates a FAISS vector sto
 - **Indexing:** Uses a normalized inner product (`IndexFlatIP`) to approximate cosine similarity.
 - **Persistence:** If a saved index exists, it is loaded; otherwise, a new index is created and saved.
 
-This setup enables efficient and focused semantic search based solely on user-reported symptoms.
+After the relevant documents are fetched based on symptom similarity, they are passed to a **Relevance Evaluator Agent**. This agent checks whether the fetched documents are relevant to the user's reported symptoms before proceeding further.
+
+This setup allow additional layer of validation to ensure accuracy.
 
 
 ## Key Features of the system
