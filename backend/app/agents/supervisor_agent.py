@@ -51,6 +51,7 @@ def supervisor(state: ExtendedMessagesState,config: RunnableConfig, store: BaseS
     summary = state.get("summary", "")
 
     prompt = """You are a medical assistant specialized in understanding user-described symptoms. \
+                If user ask non-medical questions, politely tell them to ask about their symptoms. \
                 Ask for user symptoms continuously until user says no more symptoms. \
                 Once you have the information, retrieve relevant follow-up questions based on the user's input. \
                 Use the retrieve tool to get the most relevant information. \

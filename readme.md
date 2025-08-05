@@ -4,7 +4,11 @@ This assistant is a multi-agent app that takes user input and provides diagnosis
 
 App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthcare-assistant-woad.vercel.app)
 
-## System Diagrame
+
+## System Design
+
+- **Agents Directory:** `backend/app/agents/`
+- **Agents Graph File:** `backend/app/graph/health_care_assistant_graph.py`
 
 ![System Diagrame](./system_diag.png)
 
