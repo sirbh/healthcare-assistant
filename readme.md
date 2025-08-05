@@ -12,7 +12,7 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
 
 ![System Diagrame](./system_diag.png)
 
-## Supervisor Agent Workflow
+## Agents Workflow
 
 
 
@@ -51,9 +51,20 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
 8. **Memory Update**  
    After each interaction, the **Memory Writer Agent** updates the user profile based on the latest conversation.
 
+## Symptom-Based FAISS Retriever
+
+This retriever loads symptom data from a CSV file and creates a FAISS vector store using OpenAI embeddings with cosine similarity. Each symptom is embedded and stored along with metadata like associated conditions and follow-up questions.
+
+- **Embedding Field:** Only the `symptom` field is embedded.
+- **Reason:** Since users initially provide only symptoms, embedding additional fields like conditions or questions may introduce noise and reduce retrieval accuracy.
+- **Metadata:** Includes `conditions` and `follow_up_questions`, which are not embedded but are stored for use after retrieval.
+- **Indexing:** Uses a normalized inner product (`IndexFlatIP`) to approximate cosine similarity.
+- **Persistence:** If a saved index exists, it is loaded; otherwise, a new index is created and saved.
+
+This setup enables efficient and focused semantic search based solely on user-reported symptoms.
 
 
-## Key Features
+## Key Features of the system
 
 * **Supervisor-agent architecture**: A central supervisor delegates user queries to specialized agents based on the context.
 
@@ -68,6 +79,29 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
 * **Long-term memory**: Retained using a `user id` to personalize interactions over different chat
 
 * **Chat summarization**: Once the message count reaches 40, the system summarizes the conversation to support long-running sessions.
+
+
+
+## Functional Features of the App
+
+- **Multiple Chats per User**  
+  Users can create and manage multiple conversations under the same user namespace.
+
+- **Long-Running Conversations**  
+  A **Summarizer Agent** helps maintain long conversations by summarizing message history when it exceeds a limit of 40 messages.
+
+- **Short-Term Memory Support**  
+  Each chat is mapped with chatid so that it can be fetched later.
+
+- **Long-Term Memory Support**  
+  A persistent memory shared across all chats for a user, allowing the system to recall key information like conditions, age, and gender.
+
+- **Private and Public Chats**  
+  Users can mark conversations as **private** (accessible only to them) or **public** (visible in shared/public view).
+
+- **Theme Selection**  
+  Users can toggle between **dark mode** and **light mode** for a personalized visual experience.
+
 
 
 
