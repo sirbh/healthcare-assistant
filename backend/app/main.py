@@ -71,7 +71,7 @@ app.add_middleware(
 
 @app.get("/api/health")
 def health_check():
-    data = {"status": "ok", "message": "API is running smoothly!"}
+    data = {"status": "ok", "message": "API is running smoothly!!!"}
     compressed = gzip.compress(json.dumps(data).encode('utf-8'))
     return Response(
         content=compressed,
