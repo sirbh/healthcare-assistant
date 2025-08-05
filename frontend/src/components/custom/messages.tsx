@@ -17,33 +17,14 @@ export type Message = {
 
 export default function Messages() {
 
-    // const bottomRef = useRef<HTMLDivElement | null>(null);
-    const containerRef = useRef<HTMLDivElement | null>(null);
+    const bottomRef = useRef<HTMLDivElement | null>(null);
     const lastNonHumanMessageRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
 
 
-    const { messagesLoading, messages, isMessageLoadingError, isMessagesLoadingError } = useContext(MessageStateContext);
-    // useEffect(() => {
-    //     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    // }, [messages]);
-
+    const { messageLoading, messagesLoading, messages,isMessageLoadingError,isMessagesLoadingError } = useContext(MessageStateContext);
     useEffect(() => {
-        const lastMessageRef = lastNonHumanMessageRef.current;
-        const container = containerRef.current;
-
-        if (lastMessageRef && container) {
-            const containerHeight = container.offsetHeight;
-            const minHeight = 0.8 * containerHeight;
-
-            lastMessageRef.style.minHeight = `${minHeight}px`;
-            lastMessageRef.scrollIntoView({ behavior: 'smooth' });
-
-            // Cleanup function to remove style on unmount or dependency change
-            return () => {
-                lastMessageRef.style.minHeight = '';
-            };
-        }
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
 
@@ -55,13 +36,13 @@ export default function Messages() {
     }
 
     if (isMessagesLoadingError) {
-
+        
         toast.error('Request failed, please try again later');
         router.push('/');
 
         return (
             <div className="flex items-center justify-center h-full">
-
+                
             </div>
         );
     }
@@ -74,7 +55,7 @@ export default function Messages() {
     return (
         <>
             <div className="w-full h-full overflow-y-auto">
-                <div ref={containerRef} className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-8 pb-0 ">
+                <div className="flex-1 w-full max-w-2xl mx-auto flex flex-col gap-4 px-2 pt-8 pb-0 ">
 
                     {messages.length === 0 && (
                         <div className="text-muted-foreground">
@@ -86,7 +67,7 @@ export default function Messages() {
                         <Card
                             ref={msg.role !== 'user' ? lastNonHumanMessageRef : null}
                             key={idx}
-                            className={`${msg.role === 'ai' ? '' : 'max-w-[80%]'} p-1 ${msg.role === 'user'
+                            className={`${msg.role==='ai'?'':'max-w-[80%]'} p-1 ${msg.role === 'user'
                                 ? 'self-end'
                                 : 'self-start bg-transparent shadow-none border-none'
                                 } `}
@@ -96,8 +77,8 @@ export default function Messages() {
                             </CardContent>
                         </Card>
                     ))}
-
-                    {/* <div ref={bottomRef} className="p-6 h-4 w-full" >
+ 
+                    <div ref={bottomRef} className="p-6 h-4 w-full" >
                        {messageLoading && (
            
                            <div className="self-start h-4 w-4 bg-gray-200 rounded-full animate-spin self-center">
@@ -105,7 +86,7 @@ export default function Messages() {
                            </div>
   
                        )}
-                    </div> */}
+                    </div>
                 </div>
             </div>
         </>

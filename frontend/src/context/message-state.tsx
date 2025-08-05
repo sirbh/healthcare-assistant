@@ -68,7 +68,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
     async function updateMessage(msg: string) {
 
         if (!msg.trim()) return;
-        setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'loading', content: 'loading...' }]);
+        setMessages(prev => [...prev, { role: 'user', content: msg }]);
         setMessageLoading(true);
 
         try {
@@ -146,7 +146,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
                             setMessages(prev => {
                                 const last = prev[prev.length - 1];
-                                if (last?.role === 'tool' || last?.role === 'loading') {
+                                if (last?.role === 'tool') {
                                     return [...prev.slice(0, -1), { role: 'tool', content }];
                                 } else {
                                     return [...prev, { role: 'tool', content }];
