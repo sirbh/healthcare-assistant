@@ -154,7 +154,6 @@ export default function MessageStateContextProvider({ children }: { children: Re
                         }
                     } catch (e) {
                         console.error('Error parsing JSON:', e);
-                        setIsMessageLoadingError(true);
                         setMessageLoading(false);
                     }
                 }
