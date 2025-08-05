@@ -238,11 +238,43 @@ async def chat_endpoint(
             config=config,
             version="v2",
         ):
-            if event["metadata"].get('langgraph_node', '') == "tools" and event["event"]=="on_tool_start": 
+            if event["metadata"].get('langgraph_node', '') == "tools" and event["event"]=="on_tool_start" and event["name"] == "retrieve": 
+
                 print(event["name"])
                 yield json.dumps({
                     "type": "tool",
-                    "content": event["name"],
+                    "content": "retrieving documents...",
+                }) + "\n"
+                await asyncio.sleep(0.01)
+            elif event["event"] == "on_tool_start" and event["name"] == "check_documents":
+                print(event["name"])
+                yield json.dumps({
+                    "type": "tool",
+                    "content": "checking documents...",
+                }) + "\n"
+                await asyncio.sleep(0.01)
+            
+            elif event["event"] == "on_tool_start" and event["name"] == "diagnose_condition":
+                print(event["name"])
+                yield json.dumps({
+                    "type": "tool",
+                    "content": "consulting diagnostic agent...",
+                }) + "\n"
+                await asyncio.sleep(0.01)
+            
+            elif event["event"] == "on_tool_start" and event["name"] == "explain_diagnosis":
+                print(event["name"])
+                yield json.dumps({
+                    "type": "tool",
+                    "content": "consulting explanation agent...",
+                }) + "\n"
+                await asyncio.sleep(0.01)
+            
+            elif event["event"] == "on_tool_start" and event["name"] == "recommend_treatment":
+                print(event["name"])
+                yield json.dumps({
+                    "type": "tool",
+                    "content": "consulting recommendation agent...",
                 }) + "\n"
                 await asyncio.sleep(0.01)
                
