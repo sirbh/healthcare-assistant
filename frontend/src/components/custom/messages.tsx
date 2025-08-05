@@ -70,7 +70,7 @@ export default function Messages() {
                                 : 'self-start bg-transparent shadow-none border-none'
                                 } `}
                         >
-                            <CardContent className={`p-4 text-lg whitespace-pre-wrap ${msg.role === 'tool' ? 'bg-gray-100 animate-pulse' : ''}`}>
+                            <CardContent className={`p-4 text-lg whitespace-pre-wrap ${msg.role === 'tool' ? 'border rounded-full p-3 animate-pulse' : ''}`}>
                                 <MarkdownRenderer content={msg.content} />
                             </CardContent>
                         </Card>
