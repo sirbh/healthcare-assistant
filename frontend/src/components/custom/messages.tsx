@@ -65,12 +65,12 @@ export default function Messages() {
                     {messages.map((msg, idx) => (
                         <Card
                             key={idx}
-                            className={`max-w-[80%] p-1 ${msg.role === 'user'
+                            className={`${msg.role==='ai'?'':'max-w-[80%]'} p-1 ${msg.role === 'user'
                                 ? 'self-end'
                                 : 'self-start bg-transparent shadow-none border-none'
-                                }`}
+                                } `}
                         >
-                            <CardContent className="p-4 text-lg whitespace-pre-wrap">
+                            <CardContent className={`p-4 text-lg whitespace-pre-wrap ${msg.role === 'tool' ? 'bg-gray-100 animate-pulse' : ''}`}>
                                 <MarkdownRenderer content={msg.content} />
                             </CardContent>
                         </Card>
