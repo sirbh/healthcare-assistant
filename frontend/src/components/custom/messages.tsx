@@ -17,13 +17,13 @@ export type Message = {
 
 export default function Messages() {
 
-    const bottomRef = useRef<HTMLDivElement | null>(null);
+    // const bottomRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const lastNonHumanMessageRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
 
 
-    const { messageLoading, messagesLoading, messages, isMessageLoadingError, isMessagesLoadingError } = useContext(MessageStateContext);
+    const { messagesLoading, messages, isMessageLoadingError, isMessagesLoadingError } = useContext(MessageStateContext);
     // useEffect(() => {
     //     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     // }, [messages]);
