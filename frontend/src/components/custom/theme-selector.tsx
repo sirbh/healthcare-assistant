@@ -49,7 +49,7 @@ export function ThemeSelector({
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
   const {setTheme, theme} = useTheme();
-  const [visibilityType, setVisibilityType] = useState<Theme>(theme as Theme || 'system');
+  const [visibilityType, setVisibilityType] = useState<Theme>(theme as Theme || 'dark');
 
   const handleVisibilityChange = (type: Theme) => {
     setVisibilityType(type);
