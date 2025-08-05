@@ -12,6 +12,46 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
 
 ![System Diagrame](./system_diag.png)
 
+## Supervisor Agent Workflow
+
+
+
+1. **Summarizer Agent (Long Conversation Management)**  
+   To maintain long-running conversations, the **Summarizer Agent** sits in front of the **Supervisor Agent**.  
+   - It checks if the list of user messages exceeds 40.
+   - If it does, it summarizes the previous messages.
+   - The summary is then passed to the Supervisor Agent instead of the full message history.
+
+2. **User Input Handling**  
+   The **Supervisor Agent** receives input from the user.
+
+3. **Symptom Detection & Document Retrieval**  
+   If the input contains any symptoms, the Supervisor retrieves relevant documents based on those symptoms.
+
+4. **Relevance Evaluation**  
+   The retrieved documents are passed to the **Evaluator Agent**, which assesses whether the documents are relevant to the identified symptoms.
+
+5. **Follow-up Questioning**  
+   - If the Evaluator confirms the documents are relevant, the Supervisor asks the user follow-up questions based on the document content.
+   - Once the user responds, the Supervisor compiles:
+     - The user’s answers  
+     - Identified symptoms  
+     - User profile (including age, sex, and known conditions)
+
+6. **Diagnosis**  
+   The compiled information is sent to the **Diagnostic Agent**, which returns a diagnostic outcome.  
+   The Supervisor then shares this outcome with the user.
+
+7. **Recommendations and Explanations**  
+   - The **Supervisor Agent** has access to:
+     - The **Recommendation Agent** (for treatment or next steps)  
+     - The **Explanation Agent** (for detailed clarification)
+   - If the user asks for recommendations or explanations, the Supervisor consults the appropriate agent and returns the response.
+
+8. **Memory Update**  
+   After each interaction, the **Memory Writer Agent** updates the user profile based on the latest conversation.
+
+
 
 ## Key Features
 
