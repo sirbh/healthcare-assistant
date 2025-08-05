@@ -64,10 +64,10 @@ def create_graph(store, checkpointer):
 
 
     anotherb =  builder.compile(store=store, checkpointer=checkpointer)
-    png_bytes = anotherb.get_graph().draw_mermaid_png()
-    image = Image.open(io.BytesIO(png_bytes))
+    # png_bytes = anotherb.get_graph().draw_mermaid_png()
+    # image = Image.open(io.BytesIO(png_bytes))
 
 # Show image using default image viewer
-    image.show()
+    # image.show()
 
     return anotherb
