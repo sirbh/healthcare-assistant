@@ -36,19 +36,19 @@ export default function ChatInput() {
 
 const suggestions = [
   {
-    prompt: "Why am I feeling dizzy?",
+    prompt: "I am feeling dizzy?",
     description: "Get possible causes and advice for dizziness.",
   },
   {
-    prompt: "What does a headache mean?",
+    prompt: "I am experiencing a headache?",
     description: "Understand common reasons for headaches and when to be concerned.",
   },
   {
-    prompt: "Should I worry about chest pain?",
+    prompt: "I am having chest pain?",
     description: "Find out if your chest pain could be serious and what to do next.",
   },
   {
-    prompt: "What could be causing weird stomach pain?",
+    prompt: "I am experiencing weird stomach pain?",
     description: "Explore possible reasons for unusual stomach discomfort.",
   },
 ];
@@ -61,7 +61,9 @@ const suggestions = [
           <Card
             key={idx}
             className="cursor-pointer hover:bg-accent transition p-4"
-            onClick={() => setInput(s.prompt)}
+            onClick={() => {
+              updateMessage(s.prompt);
+            }}
           >
             <CardContent className="">
               <p className="font-medium">{s.prompt}</p>
@@ -101,7 +103,12 @@ const suggestions = [
           className="min-h-[100px] max-h-[200px] resize-none text-base p-3 flex-1 pb-12"
           disabled={messageLoading||messagesLoading}
         />
-        <Button className="absolute" variant="ghost" onClick={()=>{}} disabled={messageLoading||messagesLoading}>
+        <Button className="absolute" variant="ghost" onClick={()=>{
+          if (input.trim()) {
+            updateMessage(input);
+            setInput("");
+          }
+        }} disabled={messageLoading||messagesLoading}>
           <ArrowUp size={16} className="right-0" />
         </Button>
       </div>
