@@ -42,6 +42,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
     const { updateChatName } = useContext(ChatStateContext);
     const [chatId, setChatId] = useState<string | null>(null);
 
+
     async function getChatHistory() {
         if (!chatId) return;
         setMessagesLoading(true);
@@ -67,7 +68,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
     async function updateMessage(msg: string) {
 
         if (!msg.trim()) return;
-        setMessages(prev => [...prev, { role: 'user', content: msg }]);
+        setMessages(prev => [...prev, { role: 'user', content: msg }, { role: 'loading', content: 'loading...' }]);
         setMessageLoading(true);
 
         try {
