@@ -143,7 +143,8 @@ export default function MessageStateContextProvider({ children }: { children: Re
                             summaryBuffer += content;
                             updateChatName?.(chatId!, summaryBuffer);
                         } else if (type === 'tool') {
-
+                              
+                            aiBuffer = '';
                             setMessages(prev => {
                                 const last = prev[prev.length - 1];
                                 if (last?.role === 'tool') {
