@@ -120,7 +120,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
 
                         if (type === 'ai') {
-                            if (content.trim() === '') {
+                            if (content === '') {
                                 continue;
                             } // skip empty AI messages
                             aiBuffer += content;
@@ -146,7 +146,7 @@ export default function MessageStateContextProvider({ children }: { children: Re
 
                             setMessages(prev => {
                                 const last = prev[prev.length - 1];
-                                if (last?.role === 'tool') {
+                                if (last?.role === 'tool' || last?.role === 'loading') {
                                     return [...prev.slice(0, -1), { role: 'tool', content }];
                                 } else {
                                     return [...prev, { role: 'tool', content }];
