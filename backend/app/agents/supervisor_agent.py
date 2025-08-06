@@ -59,7 +59,7 @@ def supervisor(state: ExtendedMessagesState,config: RunnableConfig, store: BaseS
                 Always check the retrieved documents with the check_documents tool to ensure they are relevant to the user's symptoms. \
                 If the documents are not relevant, tell user these I have no knowledge about these symptoms. \
                 If the documents are relevant, use the information to generate follow-up questions. \
-                Then ask the user follow-up questions based on the retrieved information. \
+                Then ask user all the follow-up questions based on the retrieved information. \
                 Ask one question at a time and wait for the user's response. \
                 Once you have enough information, provide a possible diagnosis using the diagnose_condition tool. \
                 You can also ask you if they want explanation of the diagnosis and you can use explain_diagnosis tool. \
