@@ -23,7 +23,8 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
    - The summary is then passed to the Supervisor Agent instead of the full message history.
 
 2. **User Input Handling**  
-   The **Supervisor Agent** receives input from the user.
+   The **Supervisor Agent** receives user input and decides the next action—whether to consult a specialized agent, perform retrieval, or trigger a task. This central control improves flexibility and avoids giving direct control to individual agents.
+
 
 3. **Symptom Detection & Document Retrieval**  
    If the input contains any symptoms, the Supervisor retrieves relevant documents based on those symptoms.
