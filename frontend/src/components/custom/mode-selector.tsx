@@ -57,19 +57,13 @@ export function ModeSelector({
 }, [chatVisibility]);
   
   const handleVisibilityChange = (newVisibility: 'private' | 'public') => {
+    
     const isPublic = newVisibility === 'public';
-  
-    axios.patch(`/api/chat/${params.chat}/visibility`, {
+    return axios.patch(`/api/chat/${params.chat}/visibility`, {
       is_public: isPublic, // match FastAPI's expected body
     }, {
       withCredentials: true,
     })
-      .then(() => {
-        return "update successfull"
-      })
-      .catch((error) => {
-        console.error('Error updating chat visibility:', error);
-      });
   };
 
 
