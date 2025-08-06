@@ -46,7 +46,7 @@ App is Live At : [https://healthcare-assistant-woad.vercel.app](https://healthca
    - The **Supervisor Agent** has access to:
      - The **Recommendation Agent** (for treatment or next steps)  
      - The **Explanation Agent** (for detailed clarification)
-   - If the user asks for recommendations or explanations, the Supervisor consults the appropriate agent and returns the response.
+   - If the user asks for recommendations or explanations, the Supervisor consults the appropriate agent, supply the user profile and returns the response.
 
 8. **Memory Update**  
    After each interaction, the **Memory Writer Agent** updates the user profile based on the latest conversation.
