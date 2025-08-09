@@ -67,6 +67,12 @@ After the relevant documents are fetched based on symptom similarity, they are p
 
 This setup allow additional layer of validation to ensure accuracy.
 
+## Monitoring
+The system uses **LangSmith** to track and debug agent workflows in real time, ensuring accuracy and optimizing performance.
+
+- **Trace & Debug** – Records each step in the agent chain to quickly find issues.  
+- **Metrics** – Monitors latency, token usage, and decision quality via dashboards.
+
 
 ## Key Features of the system
 
