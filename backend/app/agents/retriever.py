@@ -15,7 +15,7 @@ def retrieve(symptom: str):
     """
 
     
-    retrieved_docs = vector_store.similarity_search(symptom, k=1)
+    retrieved_docs = vector_store.similarity_search(symptom, k=3)
     serialized = "\n\n".join(
         (f"Symtom: {doc.page_content}\nMore_Details_About_Symptom: {doc.metadata}")
         for doc in retrieved_docs
