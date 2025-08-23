@@ -9,7 +9,7 @@ def check_documents(symptoms: List[str], documents: List[str]) -> str:
 
     Args:
         symptoms (List[str]): A list of user-reported symptoms.
-        documents (List[str]): A list of retrieved documents containing information about the symptoms.
+        documents (List[str]): A list of documents retrieved, containing symptoms and details about those symptoms.
 
     Returns:
         str: documents or string saying no relevant document found

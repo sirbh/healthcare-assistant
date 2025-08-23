@@ -142,8 +142,9 @@ def create_chat(
          key="userId",
          value=user_id,
          httponly=True,
-         samesite="none",  # ✅ REQUIRED for cross-origin
-         secure=True       # ✅ REQUIRED when samesite="none"
+         samesite="none",  
+         secure=True ,
+         max_age=60 * 60 * 24 * 30
     )
 
     return response
