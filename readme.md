@@ -2,7 +2,8 @@
 
 This assistant is a multi-agent app that takes user input and provides diagnosis and lifestyle advice.
 
-[![Watch the video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+[![Watch the video](https://img.youtube.com/vi/NPTSWdafa-c/0.jpg)](https://www.youtube.com/watch?v=NPTSWdafa-c)
+
 
 
 
