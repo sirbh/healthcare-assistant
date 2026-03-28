@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from app.model.chatmodel import llm
 
 
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.checkpoint.memory import InMemorySaver
 
 from langgraph.types import Command, interrupt

@@ -21,7 +21,7 @@ from .graph.test_graph import create_graph as create_test_graph
 from contextlib import asynccontextmanager
 from .agent_memory.db import init_memory
 
-from langchain.schema import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage
 
 import os,json,gzip
 
@@ -63,7 +63,7 @@ app = FastAPI(lifespan=lifespan)
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://healthcare-assistant-woad.vercel.app"],
+    allow_origins=["https://healthcare-assistant-woad.vercel.app","*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

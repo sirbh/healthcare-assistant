@@ -1,7 +1,7 @@
 from langgraph.graph import MessagesState
 from langgraph.store.base import BaseStore
 from langchain_core.runnables.config import RunnableConfig
-from langchain.schema import SystemMessage
+from langchain_core.messages import SystemMessage
 
 from enum import Enum
 from pydantic import BaseModel, Field

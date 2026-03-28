@@ -1,4 +1,4 @@
-from langchain.schema import HumanMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.messages import RemoveMessage 
 
 from .supervisor_agent import ExtendedMessagesState

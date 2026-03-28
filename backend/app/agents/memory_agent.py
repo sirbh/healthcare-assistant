@@ -1,5 +1,5 @@
 from langchain_core.runnables.config import RunnableConfig
-from langchain.schema import SystemMessage
+from langchain_core.messages import SystemMessage
 
 from trustcall import create_extractor
 from langgraph.store.base import BaseStore
