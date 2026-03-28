@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Boolean, JSON, DateTime, func
 from sqlalchemy.ext.mutable import MutableDict
+
 from .db import Base
 
 class Chat(Base):
